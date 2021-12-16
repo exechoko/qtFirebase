@@ -1,6 +1,6 @@
 #include "login.h"
 #include "ui_login.h"
-#include <authhandler.h>
+
 #include <QMessageBox>
 
 login::login(QWidget *parent) :
@@ -17,19 +17,18 @@ login::~login()
 
 void login::on_ingresar_clicked()
 {
-    authhandler authHandler;
-    authHandler.setAPIKey("AIzaSyDHOnU8T7SLeVuvumiMlf931vI8whaQ4Mg");
+    //authhandler *authHandler = new authhandler();
+
+    authHandler = new authhandler ();
+    //firebaseQT
+    authHandler->setAPIKey("AIzaSyBX4lK4SKiDk43TVCI40qhKEVsmGmMhafU");
+
+    //app-fire-exe
+    //authHandler->setAPIKey("AIzaSyDHOnU8T7SLeVuvumiMlf931vI8whaQ4Mg");
 
     QString username = ui->username->text();
     QString password = ui->password->text();
 
-    authHandler.signUserIn(username, password);
-
-    if (authHandler.okAuth){
-        QMessageBox::information(this, "Ingresor", "Ingreso correctamente");
-    } else {
-        QMessageBox::warning(this, "Error", "");
-    }
-
+    authHandler->signUserIn(username, password);
 
 }

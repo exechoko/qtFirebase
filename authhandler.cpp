@@ -3,6 +3,9 @@
 #include <QVariantMap>
 #include <QNetworkRequest>
 #include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
+
 
 authhandler::authhandler(QObject *parent)
     : QObject(parent)
@@ -49,6 +52,64 @@ void authhandler::signUserIn(const QString &emailAddress, const QString &passwor
     performPOST( signInEndpoint, jsonPayload );
 }
 
+bool authhandler::getOKAuth()
+{
+    return okAuth;
+}
+
+void authhandler::setOKAuth(bool _okAuth)
+{
+    okAuth = _okAuth;
+}
+
+void authhandler::setResponse(const QByteArray &response)
+{
+    this->response = response;
+}
+
+const QByteArray authhandler::getResponse()
+{
+    return this->response;
+}
+
+void authhandler::conectarSQL()
+{
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    //Abrimos la base de datos si falla mostramos el error
+    //db.setDatabaseName("basededatos.sqlite");
+    db.setDatabaseName("basedatos.db");
+
+    if (!db.open()) {
+        QMessageBox::warning(0, "Error", "No se conecto la base de datos.");
+
+    }
+}
+
+void authhandler::desconectarSQL()
+{
+    QSqlDatabase::removeDatabase("basedatos.db");
+}
+
+void authhandler::insertarDatosJsonToSQL(QJsonDocument jsonDocument)
+{
+    /*QJsonValue uid, nombre, imagen, domicilio, dni, causa;
+    QJsonArray todasLasPersonas = jsonDocument["uid"].toArray();
+    uid = jsonDocument["uid"];
+    for (int i = 0; i < todasLasPersonas.size(); i++ ) {
+        qDebug() << i;
+    }*/
+
+    QJsonValue nombre, tipo;
+    QJsonObject objeto = jsonDocument.object();
+
+    QJsonObject nodo = objeto.value("nodo1").toObject();
+    nombre = nodo.value("nombre");
+    tipo = nodo.value("tipo");
+    qDebug() << nombre.toString() << " - " << tipo.toString();
+
+
+}
+
 void authhandler::networkReplyReadyRead()
 {
     QByteArray response = m_networkReply->readAll();
@@ -60,8 +121,8 @@ void authhandler::networkReplyReadyRead()
 
 void authhandler::performAuthenticatedDatabaseCall()
 {
-    QString endPoint = "https://app-fire-exe.firebaseio.com/Persona.json?auth=" + m_idToken;
-    //QString endPoint = "https://qtfirebaseintegrationexample-default-rtdb.firebaseio.com/Pets.json?auth=" + m_idToken;
+    //QString endPoint = "https://app-fire-exe.firebaseio.com/Persona.json?auth=" + m_idToken;
+    QString endPoint = "https://fir-qt-8bef7-default-rtdb.firebaseio.com/Mascotas.json?auth=" + m_idToken;
     m_networkReply = m_networkAccessManager->get( QNetworkRequest(QUrl(endPoint)));
     connect( m_networkReply, &QNetworkReply::readyRead, this, &authhandler::networkReplyReadyRead );
 }
@@ -76,24 +137,30 @@ void authhandler::performPOST(const QString &url, const QJsonDocument &payload)
 
 void authhandler::parseResponse(const QByteArray &response)
 {
+    QMessageBox mensaje;
+    bool ingreso = false;
     QJsonDocument jsonDocument = QJsonDocument::fromJson( response );
-    if ( jsonDocument.object().contains("error") )
-    {
+    if ( jsonDocument.object().contains("error") ) {
         qDebug() << "Error occured!" << response;
-        okAuth = false;
-    }
-    else if ( jsonDocument.object().contains("kind"))
-    {
-        okAuth = true;
+        mensaje.setText("Error al iniciar sesión");
+        mensaje.exec();
+    } else if ( jsonDocument.object().contains("kind")) {
         QString idToken = jsonDocument.object().value("idToken").toString();
         //qDebug() << "Obtained user ID Token: " << idToken;
         qDebug() << "User signed in successfully!";
         m_idToken = idToken;
         emit userSignedIn();
-    }
-    else {
+        mensaje.setText("Ingreso correctamente");
+        mensaje.exec();
 
+
+    } else {
+        ingreso = true;
         qDebug() << "The response was: " << response;
+    }
+
+    if(ingreso){
+        insertarDatosJsonToSQL(jsonDocument);
     }
 
 }

@@ -2,6 +2,7 @@
 #define LOGIN_H
 
 #include <QWidget>
+#include <authhandler.h>
 
 namespace Ui {
 class login;
@@ -20,6 +21,7 @@ private slots:
 
 private:
     Ui::login *ui;
+    authhandler * authHandler;
     //MainWindow *mw;
     //SeleccionDeBases *select;
 };

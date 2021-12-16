@@ -6,6 +6,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QJsonDocument>
+#include <QMessageBox>
+
+#include <QSqlQuery>
 
 class authhandler : public QObject
 {
@@ -16,7 +19,16 @@ public:
     void setAPIKey( const QString & apiKey );
     void signUserUp( const QString & emailAddress, const QString & password );
     void signUserIn( const QString & emailAddress, const QString & password );
-    bool okAuth;
+    bool getOKAuth();
+    void setOKAuth(bool _okAuth);
+    void setResponse(const QByteArray &response);
+    const QByteArray getResponse();
+
+    void conectarSQL();
+    void desconectarSQL();
+    void insertarDatosJsonToSQL(QJsonDocument jsonDocument);
+
+
 
 public slots:
     void networkReplyReadyRead();
@@ -32,6 +44,11 @@ private:
     QNetworkAccessManager * m_networkAccessManager;
     QNetworkReply * m_networkReply;
     QString m_idToken;
+    bool okAuth;
+    QByteArray response;
+
+    QSqlDatabase db;
+
 };
 
 #endif // AUTHHANDLER_H
