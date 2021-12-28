@@ -1,6 +1,6 @@
 QT       += core gui
 QT += network
-QT += sql printsupport
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,6 +24,9 @@ HEADERS += \
 FORMS += \
     login.ui \
     mainwindow.ui
+
+
+QT += sql printsupport
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

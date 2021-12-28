@@ -9,6 +9,7 @@
 #include <QMessageBox>
 
 #include <QSqlQuery>
+#include <QtSql/QSql>
 
 class authhandler : public QObject
 {

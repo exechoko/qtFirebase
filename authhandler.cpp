@@ -11,6 +11,7 @@ authhandler::authhandler(QObject *parent)
     : QObject(parent)
     , m_apiKey( QString() )
 {
+    conectarSQL();
     m_networkAccessManager = new QNetworkAccessManager( this );
     connect( this, &authhandler::userSignedIn, this, &authhandler::performAuthenticatedDatabaseCall );
 }
@@ -99,14 +100,34 @@ void authhandler::insertarDatosJsonToSQL(QJsonDocument jsonDocument)
         qDebug() << i;
     }*/
 
-    QJsonValue nombre, tipo;
+    //QJsonValue id, nombre, tipo;
+    QString id, nombre, tipo;
     QJsonObject objeto = jsonDocument.object();
 
-    QJsonObject nodo = objeto.value("nodo1").toObject();
+    /*QJsonObject nodo = objeto.value("0").toObject();
     nombre = nodo.value("nombre");
     tipo = nodo.value("tipo");
-    qDebug() << nombre.toString() << " - " << tipo.toString();
+    qDebug() << nombre.toString() << " - " << tipo.toString();*/
 
+    QJsonArray arrayMisMascotas = objeto["mismascotas"].toArray();
+    //QJsonArray jsonArray = objeto["mismascotas"].toArray();
+    qDebug() << arrayMisMascotas.size();
+
+    QSqlQuery query;// Insertar una nueva mascota
+    foreach (const QJsonValue & valor, arrayMisMascotas) {
+        QJsonObject obj = valor.toObject();
+        id = obj["id"].toString();
+        nombre = obj["nombre"].toString();
+        tipo = obj["tipo"].toString();
+
+        qDebug() << id << " - " << nombre << " - " << tipo;
+        query.prepare("INSERT INTO mismascotas (id, nombre, tipo) "
+                      "VALUES (:id, :nombre, :tipo)");
+        query.bindValue(":id", id);
+        query.bindValue(":nombre", nombre);
+        query.bindValue(":tipo", tipo);
+        query.exec();
+    }
 
 }
 
