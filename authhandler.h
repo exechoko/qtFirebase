@@ -11,6 +11,8 @@
 #include <QSqlQuery>
 #include <QtSql/QSql>
 
+#include <gestion.h>
+
 class authhandler : public QObject
 {
     Q_OBJECT

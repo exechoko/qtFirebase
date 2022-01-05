@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <gestion.h>
 
 
 authhandler::authhandler(QObject *parent)
@@ -104,16 +105,10 @@ void authhandler::insertarDatosJsonToSQL(QJsonDocument jsonDocument)
     QString id, nombre, tipo;
     QJsonObject objeto = jsonDocument.object();
 
-    /*QJsonObject nodo = objeto.value("0").toObject();
-    nombre = nodo.value("nombre");
-    tipo = nodo.value("tipo");
-    qDebug() << nombre.toString() << " - " << tipo.toString();*/
-
     QJsonArray arrayMisMascotas = objeto["mismascotas"].toArray();
-    //QJsonArray jsonArray = objeto["mismascotas"].toArray();
     qDebug() << arrayMisMascotas.size();
 
-    QSqlQuery query;// Insertar una nueva mascota
+    QSqlQuery query;// Inserta una nueva mascota en cada iteracion del foreach
     foreach (const QJsonValue & valor, arrayMisMascotas) {
         QJsonObject obj = valor.toObject();
         id = obj["id"].toString();
@@ -173,6 +168,10 @@ void authhandler::parseResponse(const QByteArray &response)
         emit userSignedIn();
         mensaje.setText("Ingreso correctamente");
         mensaje.exec();
+
+        //Abre la ventana para el CRUD
+        gestion * gestion = new class gestion ();
+        gestion->show();
 
 
     } else {

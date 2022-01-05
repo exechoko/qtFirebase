@@ -21,7 +21,7 @@ void login::on_ingresar_clicked()
 
     authHandler = new authhandler ();
     //firebaseQT
-    authHandler->setAPIKey("YOUR API";
+    authHandler->setAPIKey("YOUR API");
 
     QString username = ui->username->text();
     QString password = ui->password->text();

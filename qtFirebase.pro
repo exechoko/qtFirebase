@@ -12,16 +12,19 @@ CONFIG += c++11
 
 SOURCES += \
     authhandler.cpp \
+    gestion.cpp \
     login.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     authhandler.h \
+    gestion.h \
     login.h \
     mainwindow.h
 
 FORMS += \
+    gestion.ui \
     login.ui \
     mainwindow.ui
 
